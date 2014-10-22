@@ -17,6 +17,10 @@ public class ChooseImagePanel extends JPanel{
     JFileChooser fc;
     BufferedImage image = null;
     JLabel imageView;
+    JRadioButton small;
+    JRadioButton medium;
+    JRadioButton large;
+    JRadioButton reset;
 
     public ChooseImagePanel(){
 	
@@ -32,37 +36,43 @@ public class ChooseImagePanel extends JPanel{
 	String mediumString = "Medium";
 	String largeString = "Large";
 
-	JRadioButton small = new JRadioButton(smallString);
+	small = new JRadioButton(smallString);
 	small.setActionCommand(smallString);
-	small.setSelected(true);
+	small.setEnabled(false);
 
-	JRadioButton medium = new JRadioButton(mediumString);
+	medium = new JRadioButton(mediumString);
 	medium.setActionCommand(mediumString);
+	medium.setEnabled(false);
 	
-	JRadioButton large = new JRadioButton(largeString);
+	large = new JRadioButton(largeString);
 	large.setActionCommand(largeString);
+	large.setEnabled(false);
 
-	JButton reset = new JButton("Reset");
-	reset.addActionListener(new ResetListener());
-
+	reset = new JRadioButton("Reset");
+	reset.setActionCommand("Reset");
+	reset.setEnabled(false);
+	
 	ButtonGroup group = new ButtonGroup();
 	group.add(small);
 	group.add(medium);
 	group.add(large);
-
+	group.add(reset);
+	
 	small.addActionListener(new RadioListener());
 	medium.addActionListener(new RadioListener());
 	large.addActionListener(new RadioListener());
+	reset.addActionListener(new RadioListener());
 
-	JPanel radioPanel = new JPanel(new GridLayout(0, 1));
+	JPanel radioPanel = new JPanel(new GridLayout(1, 0));
 	radioPanel.add(small);
 	radioPanel.add(medium);
 	radioPanel.add(large);
-	radioPanel.setBackground(Color.white);
+	radioPanel.add(reset);
+	radioPanel.setBackground(Color.black);
 
 	label = new JLabel("");
 	
-        imageView = new JLabel();
+        imageView = new JLabel(new ImageIcon());
 	
 	log = new JTextArea(5,20);
 	log.setMargin(new Insets(5,5,5,5));
@@ -71,25 +81,24 @@ public class ChooseImagePanel extends JPanel{
 
 	add(push);
 	add(radioPanel);
-	add(reset);
 	add(label);
 	add(logScrollPane);
 	add(imageView);
 
-	setBackground(Color.white);
+	setBackground(Color.gray);
 	setPreferredSize(new Dimension(300,40));
     }
 
-    private class ImageListener implements ActionListener{
+    public class ImageListener implements ActionListener{
 
 	public void actionPerformed(ActionEvent event){
-	    //frame.add(new FileChooser());
 	    
 	    int returnVal = fc.showOpenDialog(ChooseImagePanel.this);
 	    
 	    if(returnVal == JFileChooser.APPROVE_OPTION){
 		try{
 		    File file = fc.getSelectedFile();
+		    fileName = fc.getName(file);
 		    BufferedImage bi = null;
 		    try{
 			bi = ImageIO.read(file);
@@ -102,6 +111,11 @@ public class ChooseImagePanel extends JPanel{
 		    imageView.setIcon(new ImageIcon(image));
 		    
 		    log.append("Opening: " + file.getName() + ".\n");
+		    
+		    small.setEnabled(true);
+		    medium.setEnabled(true);
+		    large.setEnabled(true);
+		    reset.setEnabled(true);
 		}
 		catch(Exception e){
 		    System.err.println("Oops.");
@@ -114,15 +128,34 @@ public class ChooseImagePanel extends JPanel{
 	}
     }
     
-    private class ResetListener implements ActionListener{
-	public void actionPerformed(ActionEvent event){
-	}
-    } 
-
     private class RadioListener implements ActionListener{
+
 	public void actionPerformed(ActionEvent event){
-	    Pixelator pix = new Pixelator(image);
-	    pix.pixelate(e.getActionCommand());
+
+	    String size = event.getActionCommand();
+	    if(size.equals("Small")){
+		Pixelator pix = new Pixelator(fileName);
+		int pix_size = 1;
+		pix_size = 5;
+		imageView.setIcon(new ImageIcon(pix.pixelate(pix_size)));
+	    }
+	    if(size.equals("Medium")){
+		Pixelator pix = new Pixelator(fileName);
+		int pix_size = 1;
+		pix_size = 15;
+		imageView.setIcon(new ImageIcon(pix.pixelate(pix_size)));
+	    }
+	    if(size.equals("Large")){
+		Pixelator pix = new Pixelator(fileName);
+		int pix_size = 1;
+		pix_size = 30;
+		imageView.setIcon(new ImageIcon(pix.pixelate(pix_size)));
+	    }
+	    if(size.equals("Reset")){
+		Pixelator pix = new Pixelator(fileName);
+		int pix_size = 1;
+		imageView.setIcon(new ImageIcon(pix.stopPixelate()));
+	    }
 	}
     }
 }
