@@ -1,0 +1,1 @@
+This is a program that converts any image to a pixelated image.
