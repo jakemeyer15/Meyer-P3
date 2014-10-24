@@ -157,6 +157,7 @@ public class ChooseImagePanel extends JPanel{
 		    large.setEnabled(true);
 		    reset.setEnabled(true);
 		    direction.setEnabled(true);
+		    eightBit.setEnabled(true);
 		}
 		catch(Exception e){
 		    System.err.println("Oops.");
